@@ -55,9 +55,9 @@
   <form id="tabuladorForm">
     <label for="tienda">Tienda:</label>
     <select id="tienda" name="tienda" required>
-      <option value="1">Tienda 1</option>
-      <option value="2">Tienda 2</option>
-      <option value="3">Tienda 3</option>
+      <option value="BELEM">BELEM</option>
+      <option value="CARLA">CARLA</option>
+      <option value="ELENA">ELENA</option>
     </select><br>
     
     <label for="martes">Martes:</label>
@@ -75,6 +75,22 @@
     <label for="lunes">Lunes:</label>
     <input type="number" id="lunes" name="lunes" value="0" required><br>
     
+    <h2>Ingreso de Billetes</h2>
+    <label for="mil">$1000:</label>
+    <input type="number" id="mil" name="mil" value="0" required><br>
+    <label for="quinientos">$500:</label>
+    <input type="number" id="quinientos" name="quinientos" value="0" required><br>
+    <label for="doscientos">$200:</label>
+    <input type="number" id="doscientos" name="doscientos" value="0" required><br>
+    <label for="cien">$100:</label>
+    <input type="number" id="cien" name="cien" value="0" required><br>
+    <label for="cincuenta">$50:</label>
+    <input type="number" id="cincuenta" name="cincuenta" value="0" required><br>
+    <label for="veinte">$20:</label>
+    <input type="number" id="veinte" name="veinte" value="0" required><br>
+    <label for="monedas">Monedas:</label>
+    <input type="number" id="monedas" name="monedas" value="0" required><br>
+    
     <button type="submit">Generar QR</button>
   </form>
 
@@ -90,22 +106,27 @@
       event.preventDefault();
       
       const tienda = document.getElementById('tienda').value;
-      const ventas = {
-        martes: parseInt(document.getElementById('martes').value),
-        miercoles: parseInt(document.getElementById('miercoles').value),
-        jueves: parseInt(document.getElementById('jueves').value),
-        viernes: parseInt(document.getElementById('viernes').value),
-        sabado: parseInt(document.getElementById('sabado').value),
-        domingo: parseInt(document.getElementById('domingo').value),
-        lunes: parseInt(document.getElementById('lunes').value)
-      };
-
-      const total = ventas.martes + ventas.miercoles + ventas.jueves + ventas.viernes + ventas.sabado + ventas.domingo + ventas.lunes;
+      const ventasTotal = [
+        'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo', 'lunes'
+      ].reduce((acc, day) => acc + parseInt(document.getElementById(day).value), 0);
       
-      const qrData = { tienda, ventas, total };
+      const billetesTotal = (parseInt(document.getElementById('mil').value) * 1000) +
+                            (parseInt(document.getElementById('quinientos').value) * 500) +
+                            (parseInt(document.getElementById('doscientos').value) * 200) +
+                            (parseInt(document.getElementById('cien').value) * 100) +
+                            (parseInt(document.getElementById('cincuenta').value) * 50) +
+                            (parseInt(document.getElementById('veinte').value) * 20) +
+                            (parseInt(document.getElementById('monedas').value));
       
-      document.getElementById('tiendaResult').innerText = `Tienda ${tienda}`;
-      document.getElementById('totalResult').innerText = `Total Semanal: $${total}`;
+      if (ventasTotal !== billetesTotal) {
+        alert('Error: La suma de ventas y billetes no coincide. Verifique los valores.');
+        return;
+      }
+      
+      const qrData = { tienda, ventasTotal, billetesTotal };
+      
+      document.getElementById('tiendaResult').innerText = `Tienda: ${tienda}`;
+      document.getElementById('totalResult').innerText = `Total Semanal: $${ventasTotal}`;
       
       QRCode.toDataURL(JSON.stringify(qrData), { width: 400, margin: 1 }, function (err, url) {
         if (!err) {
