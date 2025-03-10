@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabulador Semanal</title>
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+  
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+      margin: 0;
+      padding: 10px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      color: #4a90e2;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+    label {
+      color: #4a90e2;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    input, select, button {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button {
+      background-color: #4a90e2;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    button:hover {
+      background-color: #357abd;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tabulador Semanal</h1>
+  <form id="tabuladorForm">
+    <label for="tienda">Tienda:</label>
+    <select id="tienda" name="tienda" required>
+      <option value="1">Tienda 1</option>
+      <option value="2">Tienda 2</option>
+      <option value="3">Tienda 3</option>
+    </select><br>
+    
+    <label for="martes">Martes:</label>
+    <input type="number" id="martes" name="martes" value="0" required><br>
+    <label for="miercoles">Miércoles:</label>
+    <input type="number" id="miercoles" name="miercoles" value="0" required><br>
+    <label for="jueves">Jueves:</label>
+    <input type="number" id="jueves" name="jueves" value="0" required><br>
+    <label for="viernes">Viernes:</label>
+    <input type="number" id="viernes" name="viernes" value="0" required><br>
+    <label for="sabado">Sábado:</label>
+    <input type="number" id="sabado" name="sabado" value="0" required><br>
+    <label for="domingo">Domingo:</label>
+    <input type="number" id="domingo" name="domingo" value="0" required><br>
+    <label for="lunes">Lunes:</label>
+    <input type="number" id="lunes" name="lunes" value="0" required><br>
+    
+    <button type="submit">Generar QR</button>
+  </form>
+
+  <div id="ticketResult" class="ticket" style="display:none;">
+    <h2 id="tiendaResult"></h2>
+    <p><span id="totalResult" class="bold"></span></p>
+    <img id="qrCode" src="" alt="Código QR">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+  <script>
+    document.getElementById('tabuladorForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      const tienda = document.getElementById('tienda').value;
+      const ventas = {
+        martes: parseInt(document.getElementById('martes').value),
+        miercoles: parseInt(document.getElementById('miercoles').value),
+        jueves: parseInt(document.getElementById('jueves').value),
+        viernes: parseInt(document.getElementById('viernes').value),
+        sabado: parseInt(document.getElementById('sabado').value),
+        domingo: parseInt(document.getElementById('domingo').value),
+        lunes: parseInt(document.getElementById('lunes').value)
+      };
+
+      const total = ventas.martes + ventas.miercoles + ventas.jueves + ventas.viernes + ventas.sabado + ventas.domingo + ventas.lunes;
+      
+      const qrData = { tienda, ventas, total };
+      
+      document.getElementById('tiendaResult').innerText = `Tienda ${tienda}`;
+      document.getElementById('totalResult').innerText = `Total Semanal: $${total}`;
+      
+      QRCode.toDataURL(JSON.stringify(qrData), { width: 400, margin: 1 }, function (err, url) {
+        if (!err) {
+          document.getElementById('qrCode').src = url;
+        }
+      });
+      
+      document.getElementById('ticketResult').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
