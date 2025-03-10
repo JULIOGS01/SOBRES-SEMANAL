@@ -10,7 +10,7 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f4f6f9;
+      background-color: #f4f6f8;
       color: #333;
       margin: 0;
       padding: 10px;
@@ -60,20 +60,13 @@
       <option value="ELENA">ELENA</option>
     </select><br>
     
-    <label for="martes">Martes:</label>
-    <input type="number" id="martes" name="martes" value="0" required><br>
-    <label for="miercoles">Miércoles:</label>
-    <input type="number" id="miercoles" name="miercoles" value="0" required><br>
-    <label for="jueves">Jueves:</label>
-    <input type="number" id="jueves" name="jueves" value="0" required><br>
-    <label for="viernes">Viernes:</label>
-    <input type="number" id="viernes" name="viernes" value="0" required><br>
-    <label for="sabado">Sábado:</label>
-    <input type="number" id="sabado" name="sabado" value="0" required><br>
-    <label for="domingo">Domingo:</label>
-    <input type="number" id="domingo" name="domingo" value="0" required><br>
-    <label for="lunes">Lunes:</label>
-    <input type="number" id="lunes" name="lunes" value="0" required><br>
+    <label for="fechaInicio">Fecha de inicio:</label>
+    <input type="date" id="fechaInicio" required><br>
+    
+    <label for="fechaFinal">Fecha final:</label>
+    <input type="date" id="fechaFinal" required><br>
+    
+    <div id="ventas"></div>
     
     <h2>Ingreso de Billetes</h2>
     <label for="mil">$1000:</label>
@@ -92,6 +85,8 @@
     <input type="number" id="monedas" name="monedas" value="0" required><br>
     
     <button type="submit">Generar QR</button>
+    <button type="button" onclick="imprimirQR()">Imprimir</button>
+    <button type="button" onclick="descargarQR()">Descargar</button>
   </form>
 
   <div id="ticketResult" class="ticket" style="display:none;">
@@ -102,40 +97,40 @@
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
   <script>
-    document.getElementById('tabuladorForm').addEventListener('submit', function(event) {
-      event.preventDefault();
+    document.getElementById('fechaInicio').addEventListener('change', function() {
+      let fechaInicio = new Date(this.value);
+      let ventasDiv = document.getElementById('ventas');
+      ventasDiv.innerHTML = '';
       
-      const tienda = document.getElementById('tienda').value;
-      const ventasTotal = [
-        'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo', 'lunes'
-      ].reduce((acc, day) => acc + parseInt(document.getElementById(day).value), 0);
-      
-      const billetesTotal = (parseInt(document.getElementById('mil').value) * 1000) +
-                            (parseInt(document.getElementById('quinientos').value) * 500) +
-                            (parseInt(document.getElementById('doscientos').value) * 200) +
-                            (parseInt(document.getElementById('cien').value) * 100) +
-                            (parseInt(document.getElementById('cincuenta').value) * 50) +
-                            (parseInt(document.getElementById('veinte').value) * 20) +
-                            (parseInt(document.getElementById('monedas').value));
-      
-      if (ventasTotal !== billetesTotal) {
-        alert('Error: La suma de ventas y billetes no coincide. Verifique los valores.');
-        return;
+      for (let i = 0; i < 7; i++) {
+        let fecha = new Date(fechaInicio);
+        fecha.setDate(fechaInicio.getDate() + i);
+        let fechaString = fecha.toISOString().split('T')[0];
+        
+        let label = document.createElement('label');
+        label.innerText = fechaString;
+        let input = document.createElement('input');
+        input.type = 'number';
+        input.name = fechaString;
+        input.value = 0;
+        input.required = true;
+        
+        ventasDiv.appendChild(label);
+        ventasDiv.appendChild(input);
       }
-      
-      const qrData = { tienda, ventasTotal, billetesTotal };
-      
-      document.getElementById('tiendaResult').innerText = `Tienda: ${tienda}`;
-      document.getElementById('totalResult').innerText = `Total Semanal: $${ventasTotal}`;
-      
-      QRCode.toDataURL(JSON.stringify(qrData), { width: 400, margin: 1 }, function (err, url) {
-        if (!err) {
-          document.getElementById('qrCode').src = url;
-        }
-      });
-      
-      document.getElementById('ticketResult').style.display = 'block';
     });
+    
+    function imprimirQR() {
+      window.print();
+    }
+    
+    function descargarQR() {
+      let img = document.getElementById('qrCode');
+      let link = document.createElement('a');
+      link.href = img.src;
+      link.download = 'QR_Tabulador.png';
+      link.click();
+    }
   </script>
 </body>
 </html>
