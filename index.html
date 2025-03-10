@@ -10,7 +10,7 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f4f6f9;
+      background-color: #f4f6f8;
       color: #333;
       margin: 0;
       padding: 10px;
@@ -105,7 +105,7 @@
       for (let i = 0; i < 7; i++) {
         let fecha = new Date(fechaInicio);
         fecha.setDate(fechaInicio.getDate() + i);
-        let fechaString = fecha.toISOString().split('T')[0];
+        let fechaString = fecha.toLocaleDateString('es-ES');
         
         let label = document.createElement('label');
         label.innerText = fechaString;
@@ -118,6 +118,12 @@
         ventasDiv.appendChild(label);
         ventasDiv.appendChild(input);
       }
+    });
+    
+    document.getElementById('tabuladorForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      document.getElementById('ticketResult').style.display = 'block';
     });
     
     function imprimirQR() {
